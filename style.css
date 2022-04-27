@@ -1,0 +1,150 @@
+@import url('https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css');
+@import url('https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css');
+
+body {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    font-family: 'Arial';
+}
+
+/* containers */
+
+div#app {
+    display: grid;
+    gap: 16px;
+    padding: 30px;
+}
+
+.buttons-group {
+    display: flex;
+    gap: 16px;
+}
+
+span.path-string {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: #e5e5e5;
+    padding: 10px 26px;
+    border-radius: 10px;
+}
+
+.container {
+    display: grid;
+    gap: 8px;
+}
+
+.container-item > div {
+    display: flex;
+    gap: 8px;
+}
+
+/* modal */
+.modal{
+    display: none;
+}
+.modal__shadow{
+    content: '';
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.169);
+    top: 0;
+    left: 0;
+    z-index: -8;
+}
+.modal_active{
+    display: block;
+    width: 600px;
+    position: fixed;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: fit-content;
+}
+.modal__content{
+    background: #fff;    
+    padding: 16px;
+    border-radius: 20px;
+}
+.btn_close-modal{
+    color: #b9b9b9;
+    background: 0;
+    border: none;
+}
+.btn_close-modal:hover{
+    color: #898989;
+}
+.modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #b9b9b9;
+}
+.fatal__error{
+    padding: 1em;
+    border: 1px solid rgb(136, 14, 14);
+    background-color: rgb(255 225 225);
+    color: rgb(136, 14, 14);
+    display: block;
+    margin-bottom: 16px;
+    font-size: .8em;
+    border-radius: 10px;
+}
+.modal__title{
+    margin: 0;
+}
+.form-group {display: flex;flex-direction: column;gap: 8px;}
+
+.modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+input[type="text"] {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid #b9b9b9;
+    outline: none;
+}
+input[type="text"].field_error{
+    border-color: rgb(136, 14, 14);
+}
+
+/* buttons */
+.btn{
+    width: fit-content;
+    padding: 8px 16px 6px;
+    border-radius: 7px;
+    border: none;
+    box-sizing: border-box;
+    transition: .3s all;
+    display: inline-flex;
+    gap: 8px;
+    align-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+.btn_primary {
+    background: #485eff;
+    color: #fff;
+}
+
+.btn_primary:hover {
+    background: #0e27df;
+}
+.btn_secondary {
+    background: #ffdb1f;
+}
+
+.btn > i.fi {
+    font-size: 1.15em;
+}

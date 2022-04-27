@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Файловый менеджер</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <span class='path-string'>{{visiblePath}}</span>
+        <div class='buttons-group'>
+            <button @click.prevent='visibleModal("dir")' class="btn btn_primary">
+                <i class="fi fi-rr-add-folder"></i>Добавить папку
+            </button>
+            <button @click.prevent='visibleModal("file")' class="btn btn_secondary">
+                <i class="fi fi-rr-add-document"></i>
+                Добавить файл
+            </button>
+        </div>
+
+        <div class='container'>
+            <div class='container-item' v-for="(item, index) in curDisk">
+                <div class='item_forder' v-if="item.type == 'dir'" @click='toFolder(index)'>
+                    <i class="fi fi-rr-folder"></i>{{item.name}}
+                </div>
+                <div class='item_file' v-else>
+                    <i class="fi fi-rr-file"></i>{{item.name}}
+                </div>
+            </div>
+        </div>
+
+        <div class='modal modal_add-obj' :class='isVisibleAddModal ? "modal_active" : ""'>
+            <div class="modal__shadow"></div>
+
+            <div class="modal__content">
+                
+                <div class="modal__header">
+                    <h3 class="modal__title">{{textAddModal}}</h3>                    
+                    <button class="btn btn_close-modal" @click="isVisibleAddModal = false;"><i class="fi fi-rr-cross"></i></button>
+                </div>
+
+                <div class="modal__errors" ref="modal__error"></div>
+                
+                <div class="modal__body">
+                    <div class='form-group'>
+                        <label for='obj-name'>Название</label>
+                        <input type='text' name='obj-name'/ ref="objName">
+                    </div>
+                    <div class="form-group">
+                        <span class="group-title">Уровень доступа</span>
+                        <div class="radio-group">
+                            <input type="checkbox" name="isPrivate" id="objPrivate" ref="objPrivate">
+                            <label for='objPrivate'>Приватный</label>
+                        </div>
+                        
+                    </div>
+                    <button @click="addNewObj" class="btn btn_primary"><i class="fi fi-rr-add"></i>Добавить</button>
+                </div>                
+            </div>            
+        </div>
+
+    </div>
+
+    <script src="vue.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
