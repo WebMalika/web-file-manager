@@ -37,6 +37,7 @@ const app = Vue.createApp({
 
             // other
             visiblePath: '/',
+            selectFolders: {}
         }
     },
     mounted: function () { 
@@ -134,6 +135,17 @@ const app = Vue.createApp({
             this.$refs.modal__error.innerHTML = '';
             this.$refs.objName.classList.remove('field_error');
             this.nameAddObj = ''
+        },
+
+        selectFolder(e, item){
+            let target = e.target;
+
+            if(target.checked)
+                this.selectFolders[item.id] = item; 
+            else 
+                delete this.selectFolders[item.id];
+            
+            console.log(this.selectFolders);
         }
     },
     computed: {

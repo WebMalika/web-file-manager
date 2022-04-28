@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible"
+        content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
     <title>Файловый менеджер</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+        href="style.css">
 </head>
+
 <body>
     <div id="app">
         <div class="navigation">
-            <button class="btn btn-nav" :class="prevFolder === false ? 'btn_inactive' : ''" @click="toPrevFolder"><i class="fi fi-rr-angle-left"></i></button>
-            <button class="btn btn-nav" :class="nextFolder === false ? 'btn_inactive' : ''"><i class="fi fi-rr-angle-right" @click="toNextFolder"></i></button>
+            <button class="btn btn-nav"
+                :class="prevFolder === false ? 'btn_inactive' : ''"
+                @click="toPrevFolder"><i class="fi fi-rr-angle-left"></i></button>
+            <button class="btn btn-nav"
+                :class="nextFolder === false ? 'btn_inactive' : ''"
+                @click="toNextFolder"><i class="fi fi-rr-angle-right"></i></button>
             <span class='path-string'>{{visiblePath}}</span>
         </div>
         <div class='buttons-group'>
-            <button @click.prevent='visibleModal("dir")' class="btn btn_primary">
+            <button @click.prevent='visibleModal("dir")'
+                class="btn btn_primary">
                 <i class="fi fi-rr-add-folder"></i>Добавить папку
             </button>
-            <button @click.prevent='visibleModal("file")' class="btn btn_secondary">
+            <button @click.prevent='visibleModal("file")'
+                class="btn btn_secondary">
                 <i class="fi fi-rr-add-document"></i>
                 Добавить файл
             </button>
@@ -30,58 +41,71 @@
                 <span>Название</span>
                 <span>Дата создания</span>
             </div>
-            <div class='container-item item_forder' v-for="(item, index) in updateCurDisk" >
-                <input type="checkbox" name="checkItem" :id="'checkFolder' + index" class="custom-checkbox">
-                <label :for="'checkFolder' + index"></label>
-                <div class="item-name" @click='toFolder(item)'><i class="fi fi-rr-folder"></i>{{item.name}}</div>
+            <div class='container-item item_forder'
+                v-for="(item, index) in updateCurDisk">
+                <input type="checkbox"
+                    name="checkItem"
+                    :id="'checkFolder' + item.id"
+                    class="custom-checkbox"
+                    @click="selectFolder($event, item)"
+                    :checked="selectFolders[item.id] ? true : false">
+                <label :for="'checkFolder' + item.id"></label>
+                <div class="item-name"
+                    @click='toFolder(item)'><i class="fi fi-rr-folder"></i>{{item.name}}</div>
                 <span class="item-date">{{item.dateCreate}}</span>
             </div>
 
-            <div class='container-item item_file' v-for="(item, index) in files[curFolderID]">
-                <input type="checkbox" name="checkItem" :id="'checkFile' + index" class="custom-checkbox">
-                <label :for="'checkFile' + index"></label>
+            <div class='container-item item_file'
+                v-for="(item, index) in files[curFolderID]">
+                <input type="checkbox"
+                    name="checkItem"
+                    :id="'checkFile' + index + '_' + curFolderID"
+                    class="custom-checkbox"
+                    disabled>
+                <label :for="'checkFile' + index + '_' + curFolderID"></label>
                 <div class="item-name"><i class="fi fi-rr-file"></i>{{item.name}}</div>
-                <span class="item-date">{{item.dateCreate}}</span>                
+                <span class="item-date">{{item.dateCreate}}</span>
             </div>
-
-            <!-- <div class='container-item' v-for="(item, index) in curDisk">
-                <div class='item_forder' v-if="item.type == 'dir'" @click='toFolder(index)'>
-                    <i class="fi fi-rr-folder"></i>{{item.name}}
-                </div>
-                <div class='item_file' v-else>
-                    <i class="fi fi-rr-file"></i>{{item.name}}
-                </div>
-            </div> -->
         </div>
 
-        <div class='modal modal_add-obj' :class='isVisibleAddModal ? "modal_active" : ""'>
+        <div class='modal modal_add-obj'
+            :class='isVisibleAddModal ? "modal_active" : ""'>
             <div class="modal__shadow"></div>
 
             <div class="modal__content">
-                
+
                 <div class="modal__header">
-                    <h3 class="modal__title">{{textAddModal}}</h3>                    
-                    <button class="btn btn_close-modal" @click="isVisibleAddModal = false;"><i class="fi fi-rr-cross"></i></button>
+                    <h3 class="modal__title">{{textAddModal}}</h3>
+                    <button class="btn btn_close-modal"
+                        @click="isVisibleAddModal = false;"><i class="fi fi-rr-cross"></i></button>
                 </div>
 
-                <div class="modal__errors" ref="modal__error"></div>
-                
+                <div class="modal__errors"
+                    ref="modal__error"></div>
+
                 <div class="modal__body">
                     <div class='form-group'>
                         <label for='obj-name'>Название</label>
-                        <input type='text' name='obj-name' ref="objName" v-model="nameAddObj">
+                        <input type='text'
+                            name='obj-name'
+                            ref="objName"
+                            v-model="nameAddObj">
                     </div>
                     <div class="form-group">
                         <span class="group-title">Уровень доступа</span>
                         <div class="radio-group">
-                            <input type="checkbox" id="objPrivate" v-model="privateStatusAddObj" class="custom-checkbox">
+                            <input type="checkbox"
+                                id="objPrivate"
+                                v-model="privateStatusAddObj"
+                                class="custom-checkbox">
                             <label for='objPrivate'>Приватный</label>
                         </div>
-                        
+
                     </div>
-                    <button @click="addNewObj" class="btn btn_primary"><i class="fi fi-rr-add"></i>Добавить</button>
-                </div>                
-            </div>            
+                    <button @click="addNewObj"
+                        class="btn btn_primary"><i class="fi fi-rr-add"></i>Добавить</button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -89,4 +113,5 @@
     <script src="vue.js"></script>
     <script src="main.js"></script>
 </body>
+
 </html>
