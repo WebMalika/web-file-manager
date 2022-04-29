@@ -52,6 +52,8 @@ const app = Vue.createApp({
 
                 this.visiblePath += folder.name + '/';
                 this.curFolderID = folder.id;
+
+                this.selectFolders = {};
             }
         },
 
@@ -72,6 +74,8 @@ const app = Vue.createApp({
             tmpPath.pop();
             tmpPath.pop();
             this.visiblePath = tmpPath.join('/') + '/';
+
+            this.selectFolders = {};
         },
 
         toNextFolder(){
@@ -85,6 +89,8 @@ const app = Vue.createApp({
             this.visiblePath += parFolder.name + '/';
 
             this.nextFolder = false;
+            
+            this.selectFolders = {};
         },
 
         visibleModal(typeAddObj){
@@ -144,8 +150,47 @@ const app = Vue.createApp({
                 this.selectFolders[item.id] = item; 
             else 
                 delete this.selectFolders[item.id];
+        },
+        
+        deleteFolders(obj){
+            if(Object.keys(this.selectFolders).length === 0) return;
+
+            for(let key in obj){
+                let itemObj = obj[key];
+                let subitems = this.folders.filter(item => item.parent == itemObj.id);
+                // console.log(subitems);
+                if(subitems.length == 0) {
+                    this.folders[itemObj.id] = {};
+                    this.files[itemObj.id] = [];
+                    continue;
+                }
+                this.deleteFolders(subitems);
+
+                this.folders[itemObj.id] = {};
+                this.files[itemObj.id] = [];
+;
+            }
+            this.selectFolders = {};
+            console.log(this.folders);
+            this.reindexData();
+        }, 
+
+        reindexData(){
+            let newFolder = [],
+                newElementID = 0,
+                newFiles = [];
             
-            console.log(this.selectFolders);
+            this.folders.forEach(element => {
+                if(Object.keys(element).length !== 0){
+                    newFiles.push(this.files[element.id]);
+                    element.id = newElementID;
+                    newFolder.push(element);
+                    ++newElementID;
+                }
+                    
+            });
+            this.folders = newFolder;
+            this.files = newFiles;
         }
     },
     computed: {

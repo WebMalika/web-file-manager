@@ -33,6 +33,12 @@
                 <i class="fi fi-rr-add-document"></i>
                 Добавить файл
             </button>
+            <button @click.prevent='deleteFolders(selectFolders)'
+                class="btn btn_danger"
+                v-if="Object.keys(selectFolders).length !== 0">
+                <i class="fi fi-rr-add-document"></i>
+                Удалить
+            </button>
         </div>
 
         <div class='container'>

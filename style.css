@@ -31,7 +31,7 @@ span.path-string {
     display: block;
     width: 100%;
     box-sizing: border-box;
-    background: #e5e5e5;
+    background: #eaecff;
     padding: 10px 26px;
     border-radius: 10px;
 }
@@ -210,6 +210,10 @@ input[type="text"].field_error {
 .btn_inactive {
     user-select: none;
     pointer-events: none;
+}
+.btn_danger{
+    background-color: #e22108;
+    color: #fff;
 }
 
 /* checkbox */
