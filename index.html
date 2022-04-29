@@ -10,6 +10,7 @@
     <title>Файловый менеджер</title>
     <link rel="stylesheet"
         href="style.css">
+    <link rel='stylesheet' href='assets/uicons/css/uicons-regular-rounded.css'>
 </head>
 
 <body>
@@ -35,7 +36,7 @@
             </button>
             <button @click.prevent='deleteFolders(selectFolders)'
                 class="btn btn_danger"
-                v-if="Object.keys(selectFolders).length !== 0">
+                v-if="Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0">
                 <i class="fi fi-rr-add-document"></i>
                 Удалить
             </button>
@@ -67,7 +68,7 @@
                     name="checkItem"
                     :id="'checkFile' + index + '_' + curFolderID"
                     class="custom-checkbox"
-                    disabled>
+                    @click="selectFile($event, index)">
                 <label :for="'checkFile' + index + '_' + curFolderID"></label>
                 <div class="item-name"><i class="fi fi-rr-file"></i>{{item.name}}</div>
                 <span class="item-date">{{item.dateCreate}}</span>

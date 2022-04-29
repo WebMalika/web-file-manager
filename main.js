@@ -37,11 +37,13 @@ const app = Vue.createApp({
 
             // other
             visiblePath: '/',
-            selectFolders: {}
+            selectFolders: {},
+            selectFiles: []
         }
     },
     mounted: function () { 
         this.curDisk = this.folders.filter(item => item.parent == this.curFolderID);
+        // this.counterFolders = this.folders[this.folders.length - 1].id + 1;
         this.counterFolders = this.folders.length;
     },
     methods: {
@@ -152,28 +154,62 @@ const app = Vue.createApp({
                 delete this.selectFolders[item.id];
         },
         
-        deleteFolders(obj){
+        selectFile(e, index){
+            let target = e.target;
+            let deleteItem = null;
+
+            if(target.checked)
+                this.selectFiles.push(index); 
+            else 
+                deleteItem = this.selectFiles.find((item, ind) =>{
+                    if(item == index)
+                        console.log('khkjhk');
+                        this.selectFiles.splice(ind, 1);
+                })
+        },
+        
+        deleteFolders(obj, level = 1){
+            if(level == 1)
+                this.deleteFiles();
+            
             if(Object.keys(this.selectFolders).length === 0) return;
 
             for(let key in obj){
                 let itemObj = obj[key];
                 let subitems = this.folders.filter(item => item.parent == itemObj.id);
-                // console.log(subitems);
+                
                 if(subitems.length == 0) {
                     this.folders[itemObj.id] = {};
                     this.files[itemObj.id] = [];
                     continue;
                 }
-                this.deleteFolders(subitems);
+                this.deleteFolders(subitems, ++level);
 
                 this.folders[itemObj.id] = {};
                 this.files[itemObj.id] = [];
-;
+                
             }
+
             this.selectFolders = {};
             console.log(this.folders);
             this.reindexData();
         }, 
+
+        deleteFiles(){ 
+            // TODO оптимизировать удаление файла из массива
+            for(let num of this.selectFiles)
+                this.files[this.curFolderID][num] = null;
+            
+
+            let newFiles = [];
+            for(let file of this.files[this.curFolderID]){
+                if(file !== null)
+                    newFiles.push(file)
+            }
+
+            this.files[this.curFolderID] = newFiles;
+            this.selectFiles = [];
+        },
 
         reindexData(){
             let newFolder = [],
@@ -182,7 +218,17 @@ const app = Vue.createApp({
             
             this.folders.forEach(element => {
                 if(Object.keys(element).length !== 0){
+
                     newFiles.push(this.files[element.id]);
+
+                    let subitems = this.folders.filter(item => item.parent == element.id);
+
+                    for(let key in subitems){
+                        let item = subitems[key];
+
+                        this.folders[item.id].parent = newElementID;
+                    }
+
                     element.id = newElementID;
                     newFolder.push(element);
                     ++newElementID;
@@ -191,6 +237,8 @@ const app = Vue.createApp({
             });
             this.folders = newFolder;
             this.files = newFiles;
+
+            this.counterFolders = this.folders.length;
         }
     },
     computed: {
