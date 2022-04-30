@@ -1,13 +1,12 @@
 //TODO
 if(!localStorage.getItem('folders')){
-    // localStorage.setItem('folders', JSON.stringify([{
-    //     parent: null,
-    //     id: 0,
-    //     name: "/",
-    //     isPrivate: false,
-    //     dateCreate: '2022-02-12'
-    // }]))
-    localStorage.setItem('folders', '[{"parent":null,"id":0,"name":"/","isPrivate":false,"dateCreate":"2022-02-12"},{"parent":0,"id":1,"name":"1","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":1,"id":2,"name":"11-1","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":1,"id":3,"name":"11-2","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":2,"id":4,"name":"111-1","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":2,"id":5,"name":"111-2","isPrivate":false,"dateCreate":"2022-04-30"}]')
+    localStorage.setItem('folders', JSON.stringify([{
+        parent: null,
+        id: 0,
+        name: "/",
+        isPrivate: false,
+        dateCreate: '2022-02-12'
+    }]))
 }
 
 if(!localStorage.getItem('files') || localStorage.getItem('files') == 'false'){
@@ -93,7 +92,6 @@ const app = Vue.createApp({
 
         toNextFolder(){
             if(this.nextFolder === false || this.folders[this.nextFolder].isPrivate) return;
-            console.log(this.nextFolder);
 
             this.prevFolder = this.curFolderID;
             this.curFolderID = this.nextFolder;
