@@ -29,6 +29,14 @@
             </button>
 
             <span class='path-string'>{{visiblePath}}</span>
+            
+
+            <button @click='editStatus = editStatus ? false : true'
+                class="btn btn_other btn_fix-w-120"
+                :class="editStatus ? 'btn_save' : 'btn_edit'">
+                <i :class="editStatus ? 'fi fi-rr-check' : 'fi fi-rr-edit'"></i>
+                {{editStatus ? 'Сохранить' : 'Редактировать'}}                
+            </button>
         </div>
         <div class='buttons-group'>
             <button @click.prevent='visibleModal("dir")'
@@ -44,21 +52,29 @@
 
             <button @click.prevent='deleteAll(selectFolders)'
                 class="btn btn_danger"
-                v-if="Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0">
+                :class="(Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0) ? '' : 'btn_inactive'">
                 <i class="fi fi-rr-trash"></i>
                 Удалить
             </button>
 
-            <button @click='cutData'
-                class="btn btn_cut"
-                v-if="Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0">
+            <button @click='cutData("cut")'
+                class="btn btn_cut btn_other"
+                :class="(Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0) ? '' : 'btn_inactive'"
+                >
                 <i class="fi fi-rr-scissors"></i>
                 Вырезать
             </button>
 
+            <button @click='cutData("copy")'
+                class="btn btn_copy btn_other"
+                :class="(Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0) ? '' : 'btn_inactive'">
+                <i class="fi fi-rr-duplicate"></i>
+                Копировать
+            </button>
+
             <button @click='putData'
-                class="btn btn_put"
-                v-if="Object.keys(cutOutData).length !== 0">
+                class="btn btn_put btn_other"
+                :class="Object.keys(cutOutData).length !== 0 ? '' : 'btn_inactive'">
                 <i class="fi fi-rr-download"></i>
                 Вставить
             </button>
@@ -69,6 +85,7 @@
                 <span>Выбрать</span>
                 <span>Название</span>
                 <span>Дата создания</span>
+                <span v-if="editStatus">Приватность</span>
             </div>
 
             <div class='container-item item_forder'
@@ -78,17 +95,31 @@
                 <input type="checkbox"
                     name="checkItem"
                     :id="'checkFolder' + item.id"
-                    class="custom-checkbox"                   
+                    class="custom-checkbox"                
                     @click="selectObj($event, selectFolders, item)"
-                    :checked="selectFolders.indexOf(item) !== -1">
+                    :checked="selectFolders.indexOf(item) !== -1"
+                    :disabled="item.isPrivate"
+                    >
                 <label :for="'checkFolder' + item.id"></label>
 
                 <div class="item-name"
-                    @click='toFolder(item)'>
-                    <i class="fi fi-rr-folder"></i>{{item.name}}
+                    @click='toFolder(item)'
+                    v-if="!editStatus"
+                    :class="item.isPrivate ? 'item_private' : ''"
+                >
+                    <i class="fi fi-rr-folder" ></i>{{item.name}}
                 </div>
+                <input type="text" v-model="item.name" v-else>
 
                 <span class="item-date">{{item.dateCreate}}</span>
+
+                <input type="checkbox"
+                    :id="'privateFolder' + item.id"
+                    class="custom-checkbox"
+                    v-model="item.isPrivate"
+                    v-if="editStatus"
+                    >
+                <label :for="'privateFolder' + item.id"></label>
             </div>
 
             <div class='container-item item_file'
@@ -104,11 +135,21 @@
                 >
                 <label :for="'checkFile' + index + '_' + curFolderID"></label>
 
-                <div class="item-name">
-                    <i class="fi fi-rr-file"></i>{{item.name}}
+                <div class="item-name" v-if="!editStatus" :class="item.isPrivate ? 'item_private' : ''">
+                    <i class="fi fi-rr-file" ></i>{{item.name}}
                 </div>
 
-                <span class="item-date">{{item.dateCreate}}</span>
+                <input type="text" v-model="item.name" v-else>
+
+                <span class="item-date">{{item.dateCreate}}</span>                
+
+                <input type="checkbox"
+                    :id="'privateFile' + index"
+                    class="custom-checkbox"
+                    v-model="item.isPrivate"
+                    v-if="editStatus"
+                    >
+                <label :for="'privateFile' + index"></label>
             </div>
         </div>
 

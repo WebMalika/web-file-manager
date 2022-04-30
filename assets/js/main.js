@@ -38,6 +38,7 @@ const app = Vue.createApp({
 
             // other
             visiblePath: '/',
+            editStatus: false,
             
             selectFolders: [],
             selectFiles: [],
@@ -241,16 +242,18 @@ const app = Vue.createApp({
             this.counterFolders = this.folders.length;
         }, 
 
-        cutData(){
+        cutData(method){
             // buffer
             if(this.selectFolders.length === 0 
                 && this.selectFiles.length == 0) return;
 
             this.cutOutData.folders = [];
+            this.cutOutData.method = method;
 
             for(let item of this.selectFolders){
                 this.cutOutData.folders.push(item);
-                item.isCut = true;
+                if(method == 'cut') 
+                    item.isCut = true;
                 this.copyData(item, 1);
             }
             
@@ -261,10 +264,11 @@ const app = Vue.createApp({
                 Object.assign(newFile, this.files[this.curFolderID][item]);
 
                 newFile.index = item;
-                newFile.name += ' - copy';
+                newFile.name += ' - ' + method;
                 this.cutOutData.files.push(newFile);
 
-                this.files[this.curFolderID][item].isCut = true;
+                if(method == 'cut') 
+                    this.files[this.curFolderID][item].isCut = true;
             }
             
             this.cutOutData.parent = this.curFolderID;
@@ -273,23 +277,24 @@ const app = Vue.createApp({
         },
         
         putData(){
-            console.log(this.cutOutData);
             for(let item of this.cutOutData.folders)
                 this.putFolder(item);
 
             for(let item of this.cutOutData.files){
                 this.files[this.curFolderID].push(item);
                 item.isCut = false;
-                this.files[this.cutOutData.parent].splice(item.index, 1);
+                if(this.cutOutData.method == "cut")
+                    this.files[this.cutOutData.parent].splice(item.index, 1);
             }
-
             
             this.putFolders = {
                 files: [],
                 folders: []
             }
 
-            this.deleteAll(this.cutOutData.folders, 1);
+            if(this.cutOutData.method == "cut")
+                this.deleteAll(this.cutOutData.folders, 1);
+
             this.cutOutData = {};
             this.selectFiles = [];
         },
@@ -300,7 +305,7 @@ const app = Vue.createApp({
             this.files.push(this.files[folder.id]);
 
             copyFolder.parent = this.curFolderID;
-            copyFolder.name += ' - copy';
+            copyFolder.name += ' - ' + this.cutOutData.method;
             copyFolder.id = this.counterFolders;
             copyFolder.isCut = false;
             this.folders.push(copyFolder);
@@ -310,9 +315,6 @@ const app = Vue.createApp({
             ++this.counterFolders;
 
             if(this.putFolders.folders.length == 0) return;
-
-            console.log(this.putFolders);
-
 
             this.putFolders.folders.forEach((item, index) => {
                 this.files.push(this.putFolders.files[index]);
@@ -330,22 +332,7 @@ const app = Vue.createApp({
 
         },
 
-        findChildData(par){
-            let child = {
-                files: [],
-                folders: []
-            };
-
-            this.folders.forEach(element => {
-                if(element.parent == par.id){
-                    child.files.push(this.files[element.id]);
-                    child.folders.push()
-                }
-            })
-        },
-
-        copyData(folder, level = 1){
-            
+        copyData(folder, level = 1){            
             this.folders.forEach(element => {
                 if(element.parent == folder.id){
                     this.putFolders.files.push(this.files[element.id]);
@@ -355,8 +342,7 @@ const app = Vue.createApp({
                     this.copyData(element, newlvl)
                 }
             })
-            // if(level > 1) return;
-        }
+        },
     },
     computed: {
         updateCurDisk: function() {

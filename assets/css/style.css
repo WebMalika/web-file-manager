@@ -41,8 +41,10 @@ span.path-string {
 /* items */
 .container-header, .container-item{
     display: grid;
-    grid-template-columns: 8% 64.5% auto;
+    grid-template-columns: .5fr 5fr 1.5fr 1fr;
     padding: 10px;
+    gap: 16px;
+    align-items: center;
 }
 .container-header {
     color: #b9b7ba;
@@ -61,12 +63,18 @@ span.item-date {
     font-size: 0.95em;
 }
 
+.container-item{
+    min-height: 30px;
+}
 .container-item:nth-child(odd) {
     background: #eaecff;
 }
 .container-item_cut{
-    background-color: rgb(249 170 170 / 48%) !important;
+    background-color: rgba(249, 170, 170, 0.392) !important;
     opacity: .6 !important;
+}
+.item_private {
+    opacity: .6;
 }
 
 /* modal */
@@ -174,7 +182,7 @@ input[type="text"].field_error {
     align-items: flex-start;
     flex-wrap: nowrap;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
 }
 
 .btn_primary {
@@ -190,6 +198,9 @@ input[type="text"].field_error {
     background: #ffdb1f;
 }
 
+.btn_secondary:hover {
+    background: #eac50b;
+}
 .btn>i.fi {
     font-size: 1.15em;
 }
@@ -211,16 +222,56 @@ input[type="text"].field_error {
 .btn_inactive {
     user-select: none;
     pointer-events: none;
+    opacity: .5;
 }
 .btn_danger{
     background-color: #e22108;
     color: #fff;
 }
+.btn_danger:hover{
+    background-color: #bc1c07;
+}
 .btn_cut{
-    background-color: #1bc2e7;
+    border-color: #f97e0c81 !important;
+}
+.btn_cut:hover{
+    background-color: #f97e0c !important;
+    color: #fff
 }
 .btn_put{
-    background-color: #f2c935;
+    border-color: #f2c93581 !important;
+}
+.btn_put:hover{
+    background-color: #f2c935 !important;
+}
+.btn_copy{
+    border-color: #35b3f281 !important;
+}
+.btn_copy:hover{
+    background-color: #35b3f2 !important;
+}
+.btn_edit{
+    border-color: #9035f281 !important;
+}
+.btn_edit:hover{
+    background-color: #9035f2 !important;
+    color: #fff
+}
+.btn_save{
+    border-color: #08c60581 !important;
+}
+.btn_save:hover{
+    background-color: #08c605 !important;
+    color: #fff
+}
+.btn_other{
+    background: #fff;
+    padding: 6px 14px;
+    border: 2px solid;
+    transition: all .3s;
+}
+.btn_fix-w-120{
+    width: 180px;
 }
 
 /* checkbox */
@@ -279,6 +330,8 @@ input[type="text"].field_error {
 
 /* стили для чекбокса, находящегося в состоянии disabled */
 .custom-checkbox:disabled+label::before {
-    background-color: #d7d7d7;
-    opacity: .5;
+    background-color: #e6e6e6;
+    opacity: .6;
+    user-select: none;
+    pointer-events: none;
 }
