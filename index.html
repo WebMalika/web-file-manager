@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0">
     <title>Файловый менеджер</title>
     <link rel="stylesheet"
-        href="style.css">
+        href="assets/css/style.css">
     <link rel='stylesheet' href='assets/uicons/css/uicons-regular-rounded.css'>
 </head>
 
@@ -18,10 +18,16 @@
         <div class="navigation">
             <button class="btn btn-nav"
                 :class="prevFolder === false ? 'btn_inactive' : ''"
-                @click="toPrevFolder"><i class="fi fi-rr-angle-left"></i></button>
+                @click="toPrevFolder">
+                    <i class="fi fi-rr-angle-left"></i>
+            </button>
+
             <button class="btn btn-nav"
                 :class="nextFolder === false ? 'btn_inactive' : ''"
-                @click="toNextFolder"><i class="fi fi-rr-angle-right"></i></button>
+                @click="toNextFolder">
+                <i class="fi fi-rr-angle-right"></i>
+            </button>
+
             <span class='path-string'>{{visiblePath}}</span>
         </div>
         <div class='buttons-group'>
@@ -29,16 +35,32 @@
                 class="btn btn_primary">
                 <i class="fi fi-rr-add-folder"></i>Добавить папку
             </button>
+
             <button @click.prevent='visibleModal("file")'
                 class="btn btn_secondary">
                 <i class="fi fi-rr-add-document"></i>
                 Добавить файл
             </button>
-            <button @click.prevent='deleteFolders(selectFolders)'
+
+            <button @click.prevent='deleteAll(selectFolders)'
                 class="btn btn_danger"
                 v-if="Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0">
-                <i class="fi fi-rr-add-document"></i>
+                <i class="fi fi-rr-trash"></i>
                 Удалить
+            </button>
+
+            <button @click='cutData'
+                class="btn btn_cut"
+                v-if="Object.keys(selectFolders).length !== 0 || selectFiles.length !== 0">
+                <i class="fi fi-rr-scissors"></i>
+                Вырезать
+            </button>
+
+            <button @click='putData'
+                class="btn btn_put"
+                v-if="Object.keys(cutOutData).length !== 0">
+                <i class="fi fi-rr-download"></i>
+                Вставить
             </button>
         </div>
 
@@ -48,29 +70,44 @@
                 <span>Название</span>
                 <span>Дата создания</span>
             </div>
+
             <div class='container-item item_forder'
-                v-for="(item, index) in updateCurDisk">
+                v-for="(item, index) in updateCurDisk"
+                :class="item.isCut ? 'container-item_cut' : ''">
+
                 <input type="checkbox"
                     name="checkItem"
                     :id="'checkFolder' + item.id"
-                    class="custom-checkbox"
-                    @click="selectFolder($event, item)"
-                    :checked="selectFolders[item.id] ? true : false">
+                    class="custom-checkbox"                   
+                    @click="selectObj($event, selectFolders, item)"
+                    :checked="selectFolders.indexOf(item) !== -1">
                 <label :for="'checkFolder' + item.id"></label>
+
                 <div class="item-name"
-                    @click='toFolder(item)'><i class="fi fi-rr-folder"></i>{{item.name}}</div>
+                    @click='toFolder(item)'>
+                    <i class="fi fi-rr-folder"></i>{{item.name}}
+                </div>
+
                 <span class="item-date">{{item.dateCreate}}</span>
             </div>
 
             <div class='container-item item_file'
-                v-for="(item, index) in files[curFolderID]">
+                v-for="(item, index) in files[curFolderID]"
+                :class="item.isCut ? 'container-item_cut' : ''">
+
                 <input type="checkbox"
                     name="checkItem"
                     :id="'checkFile' + index + '_' + curFolderID"
                     class="custom-checkbox"
-                    @click="selectFile($event, index)">
+                    @click="selectObj($event, selectFiles, index)"
+                    :checked="selectFiles.indexOf(index) !== -1"
+                >
                 <label :for="'checkFile' + index + '_' + curFolderID"></label>
-                <div class="item-name"><i class="fi fi-rr-file"></i>{{item.name}}</div>
+
+                <div class="item-name">
+                    <i class="fi fi-rr-file"></i>{{item.name}}
+                </div>
+
                 <span class="item-date">{{item.dateCreate}}</span>
             </div>
         </div>
@@ -117,8 +154,8 @@
 
     </div>
 
-    <script src="vue.js"></script>
-    <script src="main.js"></script>
+    <script src="assets/js/vue.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 
 </html>

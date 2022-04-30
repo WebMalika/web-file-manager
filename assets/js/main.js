@@ -1,16 +1,17 @@
 //TODO
 if(!localStorage.getItem('folders')){
-    localStorage.setItem('folders', JSON.stringify([{
-        parent: null,
-        id: 0,
-        name: "/",
-        isPrivate: false,
-        dateCreate: '2022-02-12'
-    }]))
+    // localStorage.setItem('folders', JSON.stringify([{
+    //     parent: null,
+    //     id: 0,
+    //     name: "/",
+    //     isPrivate: false,
+    //     dateCreate: '2022-02-12'
+    // }]))
+    localStorage.setItem('folders', '[{"parent":null,"id":0,"name":"/","isPrivate":false,"dateCreate":"2022-02-12"},{"parent":0,"id":1,"name":"1","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":1,"id":2,"name":"11-1","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":1,"id":3,"name":"11-2","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":2,"id":4,"name":"111-1","isPrivate":false,"dateCreate":"2022-04-30"},{"parent":2,"id":5,"name":"111-2","isPrivate":false,"dateCreate":"2022-04-30"}]')
 }
 
 if(!localStorage.getItem('files') || localStorage.getItem('files') == 'false'){
-    localStorage.setItem('files', JSON.stringify([[]]))
+    localStorage.setItem('files', JSON.stringify([[], [], [], [], [], []]))
 }
 
 const app = Vue.createApp({
@@ -37,13 +38,20 @@ const app = Vue.createApp({
 
             // other
             visiblePath: '/',
-            selectFolders: {},
-            selectFiles: []
+            
+            selectFolders: [],
+            selectFiles: [],
+
+            // cut data
+            cutOutData: {},
+            putFolders: {
+                files: [],
+                folders: [],
+            }
         }
     },
     mounted: function () { 
         this.curDisk = this.folders.filter(item => item.parent == this.curFolderID);
-        // this.counterFolders = this.folders[this.folders.length - 1].id + 1;
         this.counterFolders = this.folders.length;
     },
     methods: {
@@ -55,7 +63,8 @@ const app = Vue.createApp({
                 this.visiblePath += folder.name + '/';
                 this.curFolderID = folder.id;
 
-                this.selectFolders = {};
+                this.selectFolders = [];
+                this.selectFiles = [];
             }
         },
 
@@ -71,13 +80,14 @@ const app = Vue.createApp({
             else 
                 this.prevFolder = false;
 
-            // TODO 
+            // TODO прикретить регулярки
             let tmpPath = this.visiblePath.split("/");
             tmpPath.pop();
             tmpPath.pop();
             this.visiblePath = tmpPath.join('/') + '/';
 
-            this.selectFolders = {};
+            this.selectFolders = [];
+            this.selectFiles = [];
         },
 
         toNextFolder(){
@@ -92,7 +102,8 @@ const app = Vue.createApp({
 
             this.nextFolder = false;
             
-            this.selectFolders = {};
+            this.selectFolders = [];
+            this.selectFiles = [];
         },
 
         visibleModal(typeAddObj){
@@ -145,37 +156,25 @@ const app = Vue.createApp({
             this.nameAddObj = ''
         },
 
-        selectFolder(e, item){
+        selectObj(e, obj, additem = false){
             let target = e.target;
 
             if(target.checked)
-                this.selectFolders[item.id] = item; 
+                obj.push(additem);
             else 
-                delete this.selectFolders[item.id];
-        },
-        
-        selectFile(e, index){
-            let target = e.target;
-            let deleteItem = null;
-
-            if(target.checked)
-                this.selectFiles.push(index); 
-            else 
-                deleteItem = this.selectFiles.find((item, ind) =>{
-                    if(item == index)
-                        console.log('khkjhk');
-                        this.selectFiles.splice(ind, 1);
+                obj.find((item, ind) =>{
+                    if(item == additem)
+                    obj.splice(ind, 1);
                 })
         },
         
-        deleteFolders(obj, level = 1){
+        deleteAll(obj, level = 1){
             if(level == 1)
                 this.deleteFiles();
             
-            if(Object.keys(this.selectFolders).length === 0) return;
+            if(obj.length === 0) return;
 
-            for(let key in obj){
-                let itemObj = obj[key];
+            for(let itemObj of obj){
                 let subitems = this.folders.filter(item => item.parent == itemObj.id);
                 
                 if(subitems.length == 0) {
@@ -183,20 +182,21 @@ const app = Vue.createApp({
                     this.files[itemObj.id] = [];
                     continue;
                 }
-                this.deleteFolders(subitems, ++level);
+                let newlvl = level + 1;
+                this.deleteAll(subitems, newlvl);
 
                 this.folders[itemObj.id] = {};
                 this.files[itemObj.id] = [];
                 
             }
+            if(level > 1) return;
 
-            this.selectFolders = {};
-            console.log(this.folders);
-            this.reindexData();
+            this.selectFolders = [];
+
+            // TODO здесь был реиндекс массива
         }, 
 
-        deleteFiles(){ 
-            // TODO оптимизировать удаление файла из массива
+        deleteFiles(){ // TODO оптимизировать удаление файла из массива
             for(let num of this.selectFiles)
                 this.files[this.curFolderID][num] = null;
             
@@ -239,11 +239,131 @@ const app = Vue.createApp({
             this.files = newFiles;
 
             this.counterFolders = this.folders.length;
+        }, 
+
+        cutData(){
+            // buffer
+            if(this.selectFolders.length === 0 
+                && this.selectFiles.length == 0) return;
+
+            this.cutOutData.folders = [];
+
+            for(let item of this.selectFolders){
+                this.cutOutData.folders.push(item);
+                item.isCut = true;
+                this.copyData(item, 1);
+            }
+            
+
+            this.cutOutData.files = [];
+            for(let item of this.selectFiles){
+                let newFile = {};
+                Object.assign(newFile, this.files[this.curFolderID][item]);
+
+                newFile.index = item;
+                newFile.name += ' - copy';
+                this.cutOutData.files.push(newFile);
+
+                this.files[this.curFolderID][item].isCut = true;
+            }
+            
+            this.cutOutData.parent = this.curFolderID;
+            
+            this.selectFolders = [];
+        },
+        
+        putData(){
+            console.log(this.cutOutData);
+            for(let item of this.cutOutData.folders)
+                this.putFolder(item);
+
+            for(let item of this.cutOutData.files){
+                this.files[this.curFolderID].push(item);
+                item.isCut = false;
+                this.files[this.cutOutData.parent].splice(item.index, 1);
+            }
+
+            
+            this.putFolders = {
+                files: [],
+                folders: []
+            }
+
+            this.deleteAll(this.cutOutData.folders, 1);
+            this.cutOutData = {};
+            this.selectFiles = [];
+        },
+
+        putFolder(folder){
+            let copyFolder = {};
+            Object.assign(copyFolder, folder);
+            this.files.push(this.files[folder.id]);
+
+            copyFolder.parent = this.curFolderID;
+            copyFolder.name += ' - copy';
+            copyFolder.id = this.counterFolders;
+            copyFolder.isCut = false;
+            this.folders.push(copyFolder);
+
+            let shiftRatio = copyFolder.id - folder.id;
+
+            ++this.counterFolders;
+
+            if(this.putFolders.folders.length == 0) return;
+
+            console.log(this.putFolders);
+
+
+            this.putFolders.folders.forEach((item, index) => {
+                this.files.push(this.putFolders.files[index]);
+
+                let copyFolder = {};
+                Object.assign(copyFolder, item);
+                
+                copyFolder.parent += shiftRatio;
+                copyFolder.id = this.counterFolders;
+                copyFolder.isCut = false;
+
+                this.folders.push(copyFolder);
+                ++this.counterFolders;
+            })
+
+        },
+
+        findChildData(par){
+            let child = {
+                files: [],
+                folders: []
+            };
+
+            this.folders.forEach(element => {
+                if(element.parent == par.id){
+                    child.files.push(this.files[element.id]);
+                    child.folders.push()
+                }
+            })
+        },
+
+        copyData(folder, level = 1){
+            
+            this.folders.forEach(element => {
+                if(element.parent == folder.id){
+                    this.putFolders.files.push(this.files[element.id]);
+                    this.putFolders.folders.push(element);
+                    
+                    let newlvl = level + 1;
+                    this.copyData(element, newlvl)
+                }
+            })
+            // if(level > 1) return;
         }
     },
     computed: {
         updateCurDisk: function() {
             if(!this.folders) return;
+
+            if(this.curFolderID == 0) // TODO сделано чтобы не перескакивало при перенове файлов
+                this.reindexData();
             
             localStorage.setItem('folders', JSON.stringify(this.folders));
             localStorage.setItem('files', JSON.stringify(this.files));
