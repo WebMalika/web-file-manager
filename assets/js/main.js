@@ -70,7 +70,7 @@ const app = Vue.createApp({
         },
 
         toPrevFolder(){
-            if(this.prevFolder === false) return;
+            if(this.prevFolder === false || this.folders[this.prevFolder].isPrivate) return;
 
             this.nextFolder = this.curFolderID;
             this.curFolderID = this.prevFolder;
@@ -92,7 +92,7 @@ const app = Vue.createApp({
         },
 
         toNextFolder(){
-            if(this.nextFolder === false) return;
+            if(this.nextFolder === false || this.folders[this.nextFolder].isPrivate) return;
             console.log(this.nextFolder);
 
             this.prevFolder = this.curFolderID;
