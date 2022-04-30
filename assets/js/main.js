@@ -272,6 +272,7 @@ const app = Vue.createApp({
             this.cutOutData.parent = this.curFolderID;
             
             this.selectFolders = [];
+            this.selectFiles = [];
         },
         
         putData(){
