@@ -102,14 +102,14 @@
                     >
                 <label :for="'checkFolder' + item.id"></label>
 
+                <input type="text" v-model="item.name" v-if="editStatus && !item.isPrivate">
                 <div class="item-name"
-                    @click='toFolder(item)'
-                    v-if="!editStatus"
-                    :class="item.isPrivate ? 'item_private' : ''"
+                @click='toFolder(item)'
+                v-else
+                :class="item.isPrivate ? 'item_private' : ''"
                 >
                     <i class="fi fi-rr-folder" ></i>{{item.name}}
                 </div>
-                <input type="text" v-model="item.name" v-else>
 
                 <span class="item-date">{{item.dateCreate}}</span>
 
@@ -117,7 +117,7 @@
                     :id="'privateFolder' + item.id"
                     class="custom-checkbox"
                     v-model="item.isPrivate"
-                    v-if="editStatus"
+                    v-if="editStatus && !item.isPrivate"
                     >
                 <label :for="'privateFolder' + item.id"></label>
             </div>
@@ -135,11 +135,10 @@
                 >
                 <label :for="'checkFile' + index + '_' + curFolderID"></label>
 
-                <div class="item-name" v-if="!editStatus" :class="item.isPrivate ? 'item_private' : ''">
+                <input type="text" v-model="item.name" v-if="editStatus && !item.isPrivate">
+                <div class="item-name" v-else :class="item.isPrivate ? 'item_private' : ''">
                     <i class="fi fi-rr-file" ></i>{{item.name}}
                 </div>
-
-                <input type="text" v-model="item.name" v-else>
 
                 <span class="item-date">{{item.dateCreate}}</span>                
 
@@ -147,7 +146,7 @@
                     :id="'privateFile' + index"
                     class="custom-checkbox"
                     v-model="item.isPrivate"
-                    v-if="editStatus"
+                    v-if="editStatus && !item.isPrivate"
                     >
                 <label :for="'privateFile' + index"></label>
             </div>
